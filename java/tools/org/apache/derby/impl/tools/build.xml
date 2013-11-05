@@ -32,7 +32,6 @@
   <property file="${properties.dir}/extrapath.properties"/>
   <property file="${properties.dir}/compilepath.properties"/>
   <property name="ijConstants.src" value="${generated.src.dir}/${derby.dir}/impl/tools/ij/ijConstants.java"/>
-  <property name="ijTokenManager.src" value="${generated.src.dir}/${derby.dir}/impl/tools/ij/ijTokenManager.java"/>
 
 <!-- Targets -->
 
@@ -59,7 +58,6 @@
     <!--
       The following files were just generated:
 
-      CharStream.java
       ij.java
       ijConstants.java
       ijTokenManager.java
@@ -86,7 +84,12 @@
 
     <!-- reduce the visibility of these files from public to package protection -->
     <replaceregexp file="${ijConstants.src}" match="public interface" replace="interface"/>
-    <replaceregexp file="${ijTokenManager.src}" match="public class" replace="class"/>
+    <replaceregexp match="public class" replace="class">
+        <fileset dir="${generated.src.dir}/${derby.dir}/impl/tools/ij">
+            <include name="ijTokenManager.java"/>
+            <include name="SimpleCharStream.java"/>
+        </fileset>
+    </replaceregexp>
 
   </target>
 

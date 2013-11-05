@@ -54,7 +54,7 @@ import java.sql.PreparedStatement;
 public class utilMain implements java.security.PrivilegedAction<Object> {
 
 	private StatementFinder[] commandGrabber;
-	UCode_CharStream charStream;
+    SimpleCharStream charStream;
 	ijTokenManager ijTokMgr;
 	ij ijParser;
 	ConnectionEnv[] connEnv;
@@ -134,8 +134,7 @@ public class utilMain implements java.security.PrivilegedAction<Object> {
 		/* init the parser; give it no input to start with.
 		 * (1 parser for entire test.)
 		 */
-		charStream = new UCode_CharStream(
-						new StringReader(" "), 1, 1);
+        charStream = new SimpleCharStream(new StringReader(" "), 1, 1);
 		ijTokMgr = new ijTokenManager(charStream);
 		ijParser = new ij(ijTokMgr, this);
 		this.out = out;

@@ -57,11 +57,10 @@
       Token.java
       TokenMgrError.java
 
-      3 of those files are checked into the codeline:
+      2 of those files are checked into the codeline:
 
       CharStream.java
       ParseException.java
-      Token.java
 
       We don't want generated code to clash with the checked-in versions. So
       we delete the conflicting classes here.
@@ -70,7 +69,6 @@
       <fileset dir="${generated.src.dir}/${derby.dir}/impl/sql/compile">
         <include name="CharStream.java"/>
         <include name="ParseException.java"/>
-        <include name="Token.java"/>
       </fileset>
     </delete>
 
