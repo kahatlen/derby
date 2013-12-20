@@ -50,6 +50,8 @@ import org.apache.derby.shared.common.sanity.SanityManager;
 import org.apache.derby.iapi.types.SQLTimestamp;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * Factory for creating a SYSTRIGGERS row.
@@ -109,6 +111,9 @@ public class SYSTRIGGERSRowFactory extends CatalogRowFactory
 		,"c013800d-00d7-c025-480c-000a0a411200"	// SYSTRIGGERS_INDEX2
 		,"c013800d-00d7-c025-480d-000a0a411200"	// SYSTRIGGERS_INDEX3
 	};
+
+    /** TimeZone object representing Coordinated Universal Time. */
+    private final static TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     private final DataDictionary dataDictionary;
 
@@ -230,7 +235,12 @@ public class SYSTRIGGERSRowFactory extends CatalogRowFactory
 		row.setColumn(3, new SQLChar((suuid == null) ? null : suuid.toString()));
 
 		/* 4th column is CREATIONTIMESTAMP */
-		row.setColumn(4, new SQLTimestamp(createTime));
+        // Store the creation timestamp in UTC to avoid ambiguities around
+        // change from daylight saving time to standard time, or other time
+        // zone changes. The creation timestamp determins the execution order
+        // of the triggers, so we don't want ambiguities. DERBY-5866.
+        row.setColumn(4, new SQLTimestamp(createTime,
+                                          Calendar.getInstance(UTC)));
 
 		/* 5th column is EVENT */
 		row.setColumn(5, new SQLChar(event));
@@ -360,8 +370,10 @@ public class SYSTRIGGERSRowFactory extends CatalogRowFactory
 		suuid = getUUIDFactory().recreateUUID(uuidStr);
 
 		// 4th column is CREATIONTIMESTAMP (TIMESTAMP)
+        // The column was stored in UTC, so make sure its retrived as UTC
+        // as well. (See makeRow(TupleDescriptor, int).)
 		col = row.getColumn(4);
-		createTime = (Timestamp) col.getObject();
+        createTime = col.getTimestamp(Calendar.getInstance(UTC));
 
 		// 5th column is EVENT (char(1))
 		col = row.getColumn(5);
